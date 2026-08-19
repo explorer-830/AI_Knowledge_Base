@@ -118,14 +118,14 @@ def chat(request: ChatRequest):
         if best_score>1:
             return {"answer":"知识库当中没有相关内容"
             }
-        # ② 把检索结果拼起来
+      
         context = "\n\n".join(
             doc.page_content
             for doc,score in results
             if score<=1
         )
 
-        # ③ 让 DeepSeek 根据知识库内容回答
+    
         response = client.chat.completions.create(
             model="deepseek-chat",
             messages=[
