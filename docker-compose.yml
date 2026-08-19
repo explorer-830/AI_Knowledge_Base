@@ -1,0 +1,25 @@
+services:
+  backend:
+    build: .
+    container_name: ai_kb_backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      EMBEDDING_MODEL_PATH: /root/.cache/huggingface/hub/models--BAAI--bge-small-zh-v1.5/snapshots/7999e1d3359715c523056ef9478215996d62a620
+    volumes:
+      - ./chroma_db:/app/chroma_db
+      - ./uploads:/app/uploads
+      - C:/Users/i/.cache/huggingface:/root/.cache/huggingface
+
+  frontend:
+    build: .
+    container_name: ai_kb_frontend
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend
+    environment:
+      BACKEND_URL: http://backend:8000
+    command: streamlit run frontend/app.py --server.address=0.0.0.0 --server.port=8501
