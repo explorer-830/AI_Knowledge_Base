@@ -4,7 +4,7 @@ AI Knowledge Base
 
 项目支持上传 PDF 文档，对文档进行解析、文本切分、向量化并存储到 Chroma 向量数据库。用户提问后，系统通过向量相似度检索知识库中的相关内容，并结合 DeepSeek 大语言模型生成回答。
 
-项目采用 FastAPI + Streamlit + LangChain + Chroma + HuggingFace Embedding + DeepSeek API 构建。
+项目采用 FastAPI + Streamlit + LangChain + Chroma + HuggingFace Embedding + DeepSeek API等框架 构建。
 
 项目功能
 
