@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 企业知识库</title>
+  <style>
+    
+    :root {
+      --ink:          #16232E;   
+      --ink-2:        #4A5B69;   
+      --ink-3:        #8798A5;   
+      --ink-ph:       #7C8D9A;   
+      --line:         #E2E7EC;   
+      --line-strong:  #C3CDD6;   
+      --paper:        #FFFFFF;   
+      --desk:         #F3F5F7;   
+      --indigo:       #2B4B7E;   
+      --indigo-dark:  #1E3A66;   
+      --indigo-wash:  #EDF2F9;   
+      --ok:           #2E7D5B;   
+      --warn:         #B5442F;   
+
+      --r-sm:  8px;
+      --r-md:  12px;
+      --shadow: 0 1px 2px rgba(22, 35, 46, .06),
+                0 6px 20px rgba(22, 35, 46, .05);
+
+      --serif: "Source Han Serif SC", "Songti SC", "SimSun", serif;
+      --sans:  "PingFang SC", "Microsoft YaHei", "Noto Sans SC",
+               "Segoe UI", Arial, sans-serif;
+    }
+
+    
+    * { box-sizing: border-box; }
+
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--ink);
+      background: var(--desk);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    
+    [v-cloak] { display: none; }
+
+    h1, h2, h3, p { margin: 0; }
+
+    button, input { font: inherit; color: inherit; }
+
+    
+    :focus-visible {
+      outline: 2px solid var(--indigo);
+      outline-offset: 2px;
+    }
+
+    
+    #app {
+      display: grid;
+      grid-template-columns: 296px 1fr;
+      height: 100vh;
+    }
+
+    
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      padding: 24px 20px;
+      overflow-y: auto;
+      background: var(--paper);
+      border-right: 1px solid var(--line);
+    }
+
+    .brand h1 {
+      font-family: var(--serif);
+      font-size: 21px;
+      font-weight: 600;
+      letter-spacing: .01em;
+      line-height: 1.4;
+    }
+
+    .brand p {
+      margin-top: 4px;
+      font-size: 12.5px;
+      color: var(--ink-3);
+    }
+
+    
+    .side-sec {
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+    }
+
+    .side-sec > h2 {
+      margin-bottom: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-2);
+    }
+
+    
+    .main {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .main-head {
+      padding: 20px 32px;
+      background: var(--paper);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .main-head h1 {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .main-head p {
+      margin-top: 2px;
+      font-size: 12.5px;
+      color: var(--ink-3);
+    }
+
+    .thread {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px 32px;
+    }
+
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px 16px;
+      font-size: 13.5px;
+      font-weight: 500;
+      border: 1px solid transparent;
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      transition: background .15s, border-color .15s, color .15s;
+    }
+
+    .btn-block { width: 100%; }
+
+    .btn-primary {
+      color: #fff;
+      background: var(--indigo);
+    }
+    .btn-primary:hover:not(:disabled) { background: var(--indigo-dark); }
+
+    .btn-ghost {
+      color: var(--ink);
+      background: var(--paper);
+      border-color: var(--line-strong);
+    }
+    .btn-ghost:hover:not(:disabled) {
+      color: var(--indigo);
+      background: var(--indigo-wash);
+      border-color: var(--indigo);
+    }
+
+    
+    .btn:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    
+    .picker { display: block; }
+
+    .picker input { display: none; }
+
+    .picker-box {
+      
+      display: block;
+      padding: 18px 14px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--ink-2);
+      background: var(--desk);
+      border: 1px dashed #C6D0D9;
+      border-radius: var(--r-md);
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+    }
+
+    .picker-box:hover {
+      color: var(--indigo);
+      background: var(--indigo-wash);
+      border-color: var(--indigo);
+    }
+
+    .picker-name {
+      display: block;
+      margin-top: 6px;
+      font-size: 12.5px;
+      color: var(--indigo);
+      word-break: break-all;
+    }
+
+    .stack { display: flex; flex-direction: column; gap: 10px; }
+
+    
+    .notice {
+      padding: 10px 13px;
+      font-size: 12.5px;
+      line-height: 1.6;
+      border-radius: var(--r-sm);
+      border-left: 3px solid transparent;
+      word-break: break-word;
+    }
+
+    .notice-ok {
+      color: var(--ok);
+      background: #EDF6F1;
+      border-left-color: var(--ok);
+    }
+
+    .notice-err {
+      color: var(--warn);
+      background: #FBEFEC;
+      border-left-color: var(--warn);
+    }
+
+    .notice-info {
+      color: var(--ink-2);
+      background: var(--indigo-wash);
+      border-left-color: var(--indigo);
+    }
+
+    
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12.5px;
+      color: var(--ink-2);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--ink-3);
+      flex: none;
+    }
+
+    
+    .dot-ok       { background: var(--ok); }
+    .dot-wrong    { background: #C8871B; }   
+    .dot-down     { background: var(--warn); }
+
+    
+    .dot-checking { background: var(--ink-3); animation: pulse 1.4s ease-in-out infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: .25; }
+    }
+
+    
+    .msg {
+      
+      width: fit-content;
+      max-width: min(760px, 90%);
+      margin-bottom: 20px;
+    }
+
+    .bubble {
+      padding: 11px 16px;
+      border-radius: var(--r-md);
+      white-space: pre-wrap;   
+      word-break: break-word;
+    }
+
+    
+    .msg-user { margin-left: auto; }
+    .msg-user .bubble {
+      color: #fff;
+      background: var(--indigo);
+      border-bottom-right-radius: 4px;
+    }
+
+    
+    .msg-bot .bubble {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-bottom-left-radius: 4px;
+    }
+
+    
+    .msg-err .bubble {
+      color: var(--warn);
+      background: #FBEFEC;
+      border-color: #F0D6D0;
+    }
+
+    
+    .src {
+      margin-top: 8px;
+      font-size: 12.5px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--r-sm);
+      overflow: hidden;
+    }
+
+    .src > summary {
+      padding: 8px 13px;
+      color: var(--ink-2);
+      cursor: pointer;
+      list-style: none;
+      user-select: none;
+    }
+
+    .src > summary::-webkit-details-marker { display: none; }
+
+    .src > summary::before {
+      content: "▸";
+      display: inline-block;
+      margin-right: 6px;
+      color: var(--ink-3);
+      transition: transform .15s;
+    }
+
+    .src[open] > summary::before { transform: rotate(90deg); }
+
+    .src[open] > summary { border-bottom: 1px solid var(--line); }
+
+    .src-list {
+      max-height: 320px;
+      overflow-y: auto;
+    }
+
+    .src-item {
+      padding: 11px 13px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .src-item:last-child { border-bottom: none; }
+
+    .src-name {
+      font-weight: 600;
+      color: var(--indigo);
+      word-break: break-all;
+    }
+
+    .src-text {
+      margin-top: 3px;
+      color: var(--ink-2);
+      line-height: 1.65;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    
+    .empty {
+      max-width: 420px;
+      margin: 14vh auto 0;
+      text-align: center;
+    }
+
+    .empty h2 {
+      font-family: var(--serif);
+      font-size: 19px;
+      font-weight: 600;
+    }
+
+    .empty p {
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--ink-3);
+      line-height: 1.8;
+    }
+
+    .composer {
+      display: flex;
+      gap: 10px;
+      padding: 16px 32px 22px;
+      background: var(--paper);
+      border-top: 1px solid var(--line);
+    }
+
+    .composer input {
+      flex: 1;
+      min-width: 0;
+      padding: 12px 16px;
+      background: var(--desk);
+      border: 1.5px solid var(--line-strong);
+      border-radius: var(--r-sm);
+      transition: border-color .15s, background .15s, box-shadow .15s;
+    }
+
+    
+    .composer input::placeholder { color: var(--ink-ph); }
+
+    .composer input:focus {
+      background: var(--paper);
+      border-color: var(--indigo);
+      
+      box-shadow: 0 0 0 3px rgba(43, 75, 126, .12);
+      outline: none;
+    }
+
+    .composer input:disabled { opacity: .6; }
+
+    
+    .spin {
+      width: 12px;
+      height: 12px;
+      border: 2px solid currentColor;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      flex: none;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+
+    
+    @media (max-width: 820px) {
+      #app {
+        grid-template-columns: 1fr;
+        height: auto;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        border-right: none;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .thread   { padding: 20px; }
+      .main-head { padding: 16px 20px; }
+      .composer { padding: 14px 20px 18px; }
+      .msg      { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div id="app" v-cloak>
+
+  
+  <aside class="sidebar">
+
+    <div class="brand">
+      <h1>AI 企业知识库</h1>
+      <p>上传 PDF、DOCX、XLSX、TXT,构建你自己的知识库</p>
+    </div>
+
+    
+    <section class="side-sec">
+      <h2>知识库</h2>
+      <div class="stack">
+
+        
+        <label class="picker">
+          <input type="file" accept=".pdf,.docx,.xlsx,.txt" :disabled="uploading" @change="onPickFile">
+          <span class="picker-box">
+            点击选择 PDF、DOCX、XLSX、TXT 文件
+            <span class="picker-name" v-if="file">{{ file.name }}</span>
+          </span>
+        </label>
+
+        <button class="btn btn-primary btn-block"
+                :disabled="!canUpload"
+                @click="upload">
+          <span class="spin" v-if="uploading"></span>
+          {{ uploading ? '正在处理' : '上传到知识库' }}
+        </button>
+
+        <div class="notice"
+             :class="'notice-' + uploadState.kind"
+             v-if="uploadState.text">
+          {{ uploadState.text }}
+        </div>
+
+      </div>
+    </section>
+
+    
+    <section class="side-sec">
+      <h2>会话</h2>
+      <button class="btn btn-ghost btn-block"
+              :disabled="sending"
+              @click="newChat">
+        新建对话
+      </button>
+    </section>
+
+    
+    <section class="side-sec">
+      <h2>系统状态</h2>
+      <div class="status">
+        <span class="dot" :class="'dot-' + health"></span>
+        <span>{{ healthText }}</span>
+      </div>
+    </section>
+
+  </aside>
+
+  
+  <main class="main">
+
+    <header class="main-head">
+      <h1>知识库问答</h1>
+      <p>回答只依据你上传的文档,不编造</p>
+    </header>
+
+    
+    <div class="thread" ref="thread">
+
+      
+      <div class="empty" v-if="messages.length === 0">
+        <h2>还没有对话</h2>
+        <p>
+          先在左边上传 PDF、DOCX、XLSX、TXT 文档,再回来提问。<br>
+          回答下方会附上它引用的原文出处,方便核对。
+        </p>
+      </div>
+
+      
+      <div v-for="(m, i) in messages"
+           :key="i"
+           class="msg"
+           :class="'msg-' + m.role">
+
+        <div class="bubble">{{ m.text }}</div>
+
+        
+        <details class="src" v-if="m.sources && m.sources.length">
+          <summary>参考来源({{ m.sources.length }})</summary>
+          <div class="src-list">
+            <div class="src-item" v-for="(s, j) in m.sources" :key="j">
+              <div class="src-name">{{ s.source }}</div>
+              <div class="src-text">{{ s.content }}</div>
+            </div>
+          </div>
+        </details>
+
+      </div>
+
+    </div>
+
+    
+    <form class="composer" @submit.prevent="send">
+      <input v-model="question"
+             placeholder="请输入你的问题…"
+             :disabled="sending">
+      <button class="btn btn-primary" type="submit" :disabled="!canSend">
+        <span class="spin" v-if="sending"></span>
+        {{ sending ? '思考中' : '发送' }}
+      </button>
+    </form>
+
+  </main>
+
+</div>
+
+
+<script src="./vue.global.prod.js"
+        onerror="var a=document.getElementById('app');a.removeAttribute('v-cloak');a.innerHTML='<p style=&quot;padding:40px&quot;>找不到 vue.global.prod.js,确认它和 index.html 在同一个文件夹里。</p>'"></script>
+
+<script>
+
+  const API_BASE = 'http://127.0.0.1:8000';
+
+
+
+  const { createApp } = Vue;
+
+
+
+  createApp({
+
+
+
+
+    data() {
+      return {
+
+        file: null,
+        uploading: false,
+        uploadState: { kind: 'info', text: '' },
+
+
+        question: '',
+        messages: [],
+        sending: false,
+
+
+        health: 'checking',
+      };
+    },
+
+
+
+
+    computed: {
+
+      canUpload() {
+        return this.file !== null && !this.uploading;
+      },
+
+
+      canSend() {
+        return this.question.trim() !== '' && !this.sending;
+      },
+
+
+      healthText() {
+        return {
+          checking: '正在检测后端…',
+          ok:       '后端已连接',
+          wrong:    '端口上不是知识库服务',
+          down:     '后端未启动',
+        }[this.health];
+      },
+    },
+
+
+
+
+    methods: {
+
+      
+      onPickFile(event) {
+        if (this.uploading) return;
+        this.file = event.target.files[0] || null;
+        if (this.file && (!/\.(pdf|docx|xlsx|txt)$/i.test(this.file.name)
+            || this.file.size === 0 || this.file.size > 20 * 1024 * 1024)) {
+          this.file = null;
+          this.uploadState = { kind: "err", text: "请选择非空的 PDF、DOCX、XLSX、TXT 文件，且不超过 20 MB" };
+          event.target.value = "";
+          return;
+        }
+        this.uploadState = { kind: 'info', text: '' };
+
+
+
+
+
+        event.target.value = '';
+      },
+
+      
+      async upload() {
+        if (!this.canUpload) return;
+
+        this.uploading = true;
+        this.uploadState = { kind: 'info', text: '正在解析并入库,请稍候…' };
+
+        try {
+
+          const form = new FormData();
+          form.append('file', this.file);
+
+
+
+          const res  = await fetch(API_BASE + '/upload', {
+            method: 'POST',
+            body: form,
+          });
+          const data = await res.json().catch(() => ({}));
+
+          if (res.ok) {
+            if (!data || typeof data.filename !== 'string'
+                || !Number.isInteger(data.chunk_count) || data.chunk_count < 1) {
+              this.uploadState = { kind: 'err', text: '后端返回的数据格式不正确，请检查服务' };
+              return;
+            }
+            this.uploadState = {
+              kind: 'ok',
+              text: '已入库「' + data.filename + '」,共 ' + data.chunk_count + ' 个文本块',
+            };
+            this.file = null;
+          } else {
+
+            this.uploadState = {
+              kind: 'err',
+              text: data.detail || '上传失败(状态码 ' + res.status + ')',
+            };
+          }
+        } catch (err) {
+
+          this.uploadState = {
+            kind: 'err',
+            text: '连不上后端,请确认 FastAPI 已启动。',
+          };
+        } finally {
+          this.uploading = false;
+        }
+      },
+
+      
+      async send() {
+        if (!this.canSend) return;
+
+        const text = this.question.trim();
+        this.question = '';
+
+
+        this.messages.push({ role: 'user', text: text, sources: [] });
+        this.sending = true;
+        this.scrollToBottom();
+
+        try {
+          const res  = await fetch(API_BASE + '/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: text }),
+          });
+          const data = await res.json().catch(() => ({}));
+
+          if (res.ok) {
+            this.messages.push({
+              role: 'bot',
+              text: data.answer,
+              sources: data.sources || [],
+            });
+          } else {
+            this.messages.push({
+              role: 'err',
+              text: data.detail || '请求失败(状态码 ' + res.status + ')',
+              sources: [],
+            });
+          }
+        } catch (err) {
+          this.messages.push({
+            role: 'err',
+            text: '连不上后端,请确认 FastAPI 已启动。',
+            sources: [],
+          });
+        } finally {
+          this.sending = false;
+          this.scrollToBottom();
+        }
+      },
+
+      
+      newChat() {
+        this.messages = [];
+        this.question = '';
+      },
+
+      
+      async checkHealth() {
+        try {
+          const res  = await fetch(API_BASE + '/', {
+            signal: AbortSignal.timeout(3000),
+          });
+          const data = await res.json();
+
+          this.health = data.message === '企业知识库启动成功' ? 'ok' : 'wrong';
+        } catch (err) {
+          this.health = 'down';
+        }
+      },
+
+      
+      scrollToBottom() {
+
+        this.$nextTick(() => {
+          const box = this.$refs.thread;
+          if (box) box.scrollTop = box.scrollHeight;
+        });
+      },
+
+    },
+
+
+
+
+    mounted() {
+      this.checkHealth();
+    },
+
+  }).mount('#app');
+</script>
+</body>
+</html>
